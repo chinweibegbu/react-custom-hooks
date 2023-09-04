@@ -7,6 +7,13 @@ function useSpeakerDataManager() {
     isLoading: true,
     speakerList: [],
   });
+
+  function toggleSpeakerFavorite(speakerRec) {
+    speakerRec.favorite === true
+      ? dispatch({ type: 'unfavorite', id: speakerRec.id })
+      : dispatch({ type: 'favorite', id: speakerRec.id });
+  }
+
   useEffect(() => {
     new Promise(function (resolve) {
       setTimeout(function () {
@@ -21,7 +28,7 @@ function useSpeakerDataManager() {
     return () => {
       console.log('cleanup');
     };
-  }, []); // [speakingSunday, speakingSaturday]);
-  return { isLoading, speakerList, dispatch };
+  }, []);
+  return { isLoading, speakerList, toggleSpeakerFavorite };
 }
 export default useSpeakerDataManager;
