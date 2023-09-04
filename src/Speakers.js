@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useContext,
   useEffect,
@@ -18,26 +18,22 @@ const Speakers = ({}) => {
   const [speakingSaturday, setSpeakingSaturday] = useState(true);
   const [speakingSunday, setSpeakingSunday] = useState(true);
 
-  const [speakerList, dispatch] = useReducer(speakersReducer, []);
-
-  const [isLoading, setIsLoading] = useState(true);
+  const [{ isLoading, speakerList }, dispatch] = useReducer(speakersReducer, {
+    isLoading: true,
+    speakerList: [],
+  });
 
   const context = useContext(ConfigContext);
 
   useEffect(() => {
-    setIsLoading(true);
     new Promise(function (resolve) {
       setTimeout(function () {
         resolve();
       }, 1000);
     }).then(() => {
-      setIsLoading(false);
-      const speakerListServerFilter = SpeakerData.filter(({ sat, sun }) => {
-        return (speakingSaturday && sat) || (speakingSunday && sun);
-      });
       dispatch({
         type: 'setSpeakerList',
-        data: speakerListServerFilter,
+        data: SpeakerData,
       });
     });
     return () => {
@@ -54,9 +50,10 @@ const Speakers = ({}) => {
   const heartFavoriteHandler = useCallback((e, favoriteValue) => {
     e.preventDefault();
     const sessionId = parseInt(e.target.attributes['data-sessionid'].value);
+    // this is dispatching what the new value will be, see speakerDetail for it passing !favorite in.
     dispatch({
       type: favoriteValue === true ? 'favorite' : 'unfavorite',
-      sessionId,
+      id: sessionId,
     });
   }, []);
 
