@@ -3,7 +3,9 @@ import path from 'path';
 import fs from 'fs';
 import React from 'react';
 
-export async function getServerSideProps() {
+export const InitialSpeakersDataContext = React.createContext();
+
+export async function getStaticProps() {
   const { promisify } = require('util');
   const readFile = promisify(fs.readFile);
   const jsonFile = path.resolve('./', 'db.json');
@@ -15,11 +17,15 @@ export async function getServerSideProps() {
     console.log('/api/speakers error:', e);
   }
 
-  return { props: { initialSpeakersData } };
+  return { revalidate: 1, props: { initialSpeakersData } };
 }
 
 function speakers({ initialSpeakersData }) {
-  return <App pageName="Speakers" />;
+  return (
+    <InitialSpeakersDataContext.Provider value={initialSpeakersData}>
+      <App pageName="Speakers" />
+    </InitialSpeakersDataContext.Provider>
+  );
 }
 
 export default speakers;
